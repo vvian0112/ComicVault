@@ -1,0 +1,154 @@
+package com.example.comicvault
+
+import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import android.view.Menu
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.material.appbar.MaterialToolbar
+
+class MainActivity : AppCompatActivity() {
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // --- Toolbar Setup ---
+        val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
+
+        // Make toolbar work with ActionBar system
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = getString(R.string.catalog_title)
+
+        // Restore hamburger icon
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
+
+        // Tint toolbar & icons
+        toolbar.setBackgroundColor(getColor(R.color.md_theme_primary))
+        toolbar.setTitleTextColor(getColor(R.color.md_theme_onPrimary))
+        toolbar.navigationIcon?.setTint(getColor(R.color.md_theme_onPrimary))
+        toolbar.overflowIcon?.setTint(getColor(R.color.md_theme_onPrimary))
+
+        // Menu item click
+        toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.action_about -> {
+                    startActivity(Intent(this, AboutActivity::class.java))
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // --- RecyclerView Setup ---
+        val recyclerView = findViewById<RecyclerView>(R.id.comicRecyclerView)
+        recyclerView.layoutManager = StaggeredGridLayoutManager(
+            2,
+            StaggeredGridLayoutManager.VERTICAL
+        )
+
+        // --- Comic List ---
+        val comics = listOf(
+            ComicItem(
+                "Lawak Kampus (Untuk korang yang tengah bosan!)",
+                "A fun activity book filled with colouring pages, puzzles, drawing tasks, and interactive challenges featuring Lawak Kampus characters. Not a story volume.",
+                "RM 10.00",
+                R.drawable.comic1
+            ),
+            ComicItem(
+                "Buku Aktiviti – Edisi Ulang Tahun",
+                "A special anniversary activity edition with creative tasks, games, doodles, and character challenges.",
+                "RM 12.00",
+                R.drawable.comic2
+            ),
+            ComicItem(
+                "Lawak Kampus Character Card Edition",
+                "A collectible showcase featuring character profiles, artwork, and limited-edition illustrations.",
+                "RM 9.50",
+                R.drawable.comic3
+            ),
+            ComicItem(
+                "Lawak Kampus Jilid 17",
+                "Stories focusing on fashion competitions, misunderstandings, and stylish school life.",
+                "RM 14.00",
+                R.drawable.comic4
+            ),
+            ComicItem(
+                "Lawak Kampus Jilid 25",
+                "Funny stories about working part-time at a bubble tea shop.",
+                "RM 11.20",
+                R.drawable.comic5
+            ),
+            ComicItem(
+                "Lawak Kampus Jilid 26",
+                "Slice-of-life stories about classroom pranks, crushes, and routines.",
+                "RM 13.50",
+                R.drawable.comic6
+            ),
+            ComicItem(
+                "Lawak Kampus Jilid 28",
+                "Character-driven volume focusing on emotions and friendships.",
+                "RM 8.90",
+                R.drawable.comic7
+            ),
+            ComicItem(
+                "Lawak Kampus Jilid 35",
+                "Spooky and funny ghost-themed adventures.",
+                "RM 15.00",
+                R.drawable.comic8
+            ),
+            ComicItem(
+                "Lawak Kampus Jilid 41",
+                "Chaotic adventures as food-delivery riders.",
+                "RM 12.80",
+                R.drawable.comic9
+            )
+        )
+
+        // Adapter Setup
+        recyclerView.adapter = ComicAdapter(comics) { item ->
+            startActivity(
+                Intent(this, DetailActivity::class.java).apply {
+                    putExtra("title", item.title)
+                    putExtra("desc", item.description)
+                    putExtra("cost", item.cost)
+                    putExtra("image", item.imageRes)
+                }
+            )
+        }
+
+        // Apply Large Text toggle (runtime only)
+        if (AppState.largeTextEnabled) {
+            toolbar.setTitleTextAppearance(this, android.R.style.TextAppearance_Large)
+            recyclerView.adapter?.notifyDataSetChanged()
+        }
+    }
+
+    // Refresh screen when returning from About page
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onResume() {
+        super.onResume()
+
+        val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        val recyclerView = findViewById<RecyclerView>(R.id.comicRecyclerView)
+
+        if (AppState.largeTextEnabled) {
+            toolbar.setTitleTextAppearance(this, android.R.style.TextAppearance_Large)
+        } else {
+            toolbar.setTitleTextAppearance(this, android.R.style.TextAppearance_Medium)
+        }
+
+        recyclerView.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+}

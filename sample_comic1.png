@@ -1,0 +1,5 @@
+package com.example.comicvault
+
+object AppState {
+    var largeTextEnabled: Boolean = false
+}

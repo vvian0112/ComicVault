@@ -1,0 +1,60 @@
+package com.example.comicvault
+
+import android.os.Build
+import android.os.Bundle
+import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.appbar.MaterialToolbar
+import androidx.appcompat.widget.SwitchCompat
+
+class AboutActivity : AppCompatActivity() {
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_about)
+
+        // --- Toolbar Setup ---
+        val toolbar = findViewById<MaterialToolbar>(R.id.topAppBarAbout)
+        toolbar.setBackgroundColor(getColor(R.color.md_theme_primary))
+        toolbar.setTitleTextColor(getColor(R.color.md_theme_onPrimary))
+        toolbar.navigationIcon?.setTint(getColor(R.color.md_theme_onPrimary))
+        toolbar.overflowIcon?.setTint(getColor(R.color.md_theme_onPrimary))
+
+        toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
+        // --- Bind TextViews ---
+        val titleText = findViewById<TextView>(R.id.aboutTitle)
+        val nameText = findViewById<TextView>(R.id.aboutName)
+        val codeText = findViewById<TextView>(R.id.aboutCode)
+
+        // --- Bind Toggle ---
+        val toggle = findViewById<SwitchCompat>(R.id.largeTextSwitch)
+
+        // --- Apply toggle ON/OFF immediately on this screen ---
+        toggle.setOnCheckedChangeListener { _, isChecked ->
+            AppState.largeTextEnabled = isChecked  // update global state
+
+            if (isChecked) {
+                titleText.textSize = 34f
+                nameText.textSize = 22f
+                codeText.textSize = 22f
+            } else {
+                titleText.textSize = 28f
+                nameText.textSize = 18f
+                codeText.textSize = 18f
+            }
+        }
+
+        // --- Apply stored state when returning to About screen ---
+        if (AppState.largeTextEnabled) {
+            toggle.isChecked = true
+            titleText.textSize = 34f
+            nameText.textSize = 22f
+            codeText.textSize = 22f
+        }
+    }
+}

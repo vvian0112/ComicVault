@@ -1,0 +1,8 @@
+package com.example.comicvault
+
+data class ComicItem(
+    val title: String,
+    val description: String,
+    val cost: String,
+    val imageRes: Int
+)
